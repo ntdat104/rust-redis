@@ -116,7 +116,7 @@ function draw(N) {
   return encodePNG(N, N, rgba);
 }
 
-const sizes = { "32x32.png": 32, "128x128.png": 128, "128x128@2x.png": 256, "icon.png": 512 };
+const sizes = { "32x32.png": 32, "128x128.png": 128, "128x128@2x.png": 256, "icon.png": 1024 };
 for (const [name, size] of Object.entries(sizes)) {
   fs.writeFileSync(path.join(OUT, name), draw(size));
   console.log("wrote", name, `(${size}x${size})`);
