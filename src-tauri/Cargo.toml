@@ -1,0 +1,51 @@
+[package]
+name = "rust-redis"
+version = "0.1.0"
+description = "A fast, lightweight Redis GUI client (a Redis Insight alternative)"
+authors = ["ntdat104"]
+edition = "2021"
+rust-version = "1.77"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This solves an issue with tauri-plugin-shell not building on Windows.
+name = "rust_redis_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+redis = { version = "0.27", features = [
+    "tokio-comp",
+    "connection-manager",
+    "tls-native-tls",
+    "tokio-native-tls-comp",
+    "cluster",
+    "cluster-async",
+] }
+thiserror = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+futures-util = "0.3"
+russh = "0.45"
+async-trait = "0.1"
+
+[features]
+# This feature is used for production builds or when a dev server is not specified,
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

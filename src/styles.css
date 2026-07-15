@@ -1,0 +1,559 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — dark theme only                                     */
+/* ------------------------------------------------------------------ */
+:root {
+  /* Tells the engine (incl. WebKitGTK) to render native controls — the
+     <select> option popup in particular — with dark colors. */
+  color-scheme: dark;
+  --bg: #14161c;
+  --surface: #1b1e26;
+  --surface-2: #262b36;
+  --border: #2c313c;
+  --fg: #e6e8ec;
+  --fg-dim: #9aa0ab;
+  --fg-faint: #6b7280;
+  --accent: #e13b2f;
+  --accent-hover: #f0574c;
+  --blue: #4f8cff;
+  --green: #3fb950;
+  --yellow: #d29922;
+  --purple: #a371f7;
+  --json-key: #7fb2ff;
+  --json-string: #6fdc8c;
+  --json-number: #f0b35b;
+  --json-bool: #cba6f7;
+  --json-null: #6b7280;
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-fg-dim: var(--fg-dim);
+  --color-fg-faint: var(--fg-faint);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-blue: var(--blue);
+  --color-green: var(--green);
+  --color-yellow: var(--yellow);
+  --color-purple: var(--purple);
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas,
+    monospace;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-faint);
+}
+
+/* ------------------------------------------------------------------ */
+/* Helpers                                                             */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .row {
+    @apply flex items-center gap-2;
+  }
+  .spacer {
+    @apply flex-1;
+  }
+  .muted {
+    color: var(--fg-dim);
+  }
+  .faint {
+    color: var(--fg-faint);
+  }
+  .mono {
+    font-family: var(--font-mono);
+  }
+
+  /* ---------- buttons ---------- */
+  button {
+    @apply inline-flex cursor-pointer select-none items-center justify-center gap-1.5
+      rounded-lg px-3 py-1.5 text-[13px] font-medium
+      disabled:cursor-not-allowed disabled:opacity-45;
+    background: var(--surface-2);
+    color: var(--fg);
+    border: 1px solid var(--border);
+  }
+  button:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--fg-faint) 60%, var(--border));
+    background: color-mix(in srgb, var(--surface-2) 70%, var(--fg-faint));
+  }
+  button:active:not(:disabled) {
+    background: color-mix(in srgb, var(--surface-2) 55%, var(--fg-faint));
+  }
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  button.primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  button.ghost {
+    background: transparent;
+    border-color: transparent;
+  }
+  button.ghost:hover:not(:disabled) {
+    background: var(--surface-2);
+  }
+  button.danger {
+    color: var(--accent);
+  }
+  button.danger:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+  }
+  button.small {
+    @apply px-2.5 py-1 text-xs rounded-md;
+  }
+  .icon-btn {
+    @apply h-[34px] w-[34px] p-0 rounded-lg;
+  }
+
+  /* ---------- inputs ---------- */
+  input,
+  select,
+  textarea {
+    @apply rounded-lg px-2.5 py-2 text-[13px] outline-none;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
+  }
+  select {
+    @apply cursor-pointer;
+  }
+  /* Native option popups don't inherit colors on WebKitGTK — set explicitly. */
+  select option,
+  select optgroup {
+    background: var(--surface);
+    color: var(--fg);
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 22%, transparent);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--fg-faint);
+  }
+  textarea {
+    font-family: var(--font-mono);
+    resize: vertical;
+  }
+  label {
+    @apply mb-1 block text-xs;
+    color: var(--fg-dim);
+  }
+  input[type="checkbox"] {
+    @apply h-auto w-auto cursor-pointer p-0;
+    accent-color: var(--accent);
+  }
+
+  /* inline-editable table cell (double-click to edit) */
+  .editable {
+    @apply cursor-text rounded px-1;
+  }
+  .editable:hover {
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+
+  /* ---------- error banner ---------- */
+  .error-banner {
+    @apply fixed bottom-4 left-1/2 z-[100] flex max-w-[80%] -translate-x-1/2
+      items-center gap-3 rounded-xl px-4 py-2.5;
+    background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+    color: var(--fg);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ---------- connections ---------- */
+  .connections {
+    @apply mx-auto max-w-4xl px-6 py-14;
+  }
+  .connections h1 {
+    @apply mb-1 flex items-center gap-2.5 text-2xl font-bold;
+  }
+  .connections .sub {
+    @apply mb-7;
+    color: var(--fg-dim);
+  }
+  .conn-grid {
+    @apply grid gap-3.5;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .conn-card {
+    @apply flex flex-col gap-1.5 rounded-2xl p-4;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .conn-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  }
+  .conn-card .name {
+    @apply text-[15px] font-semibold;
+  }
+  .conn-card .addr {
+    @apply text-xs;
+    font-family: var(--font-mono);
+    color: var(--fg-dim);
+  }
+  .conn-card .actions {
+    @apply mt-2.5 flex gap-1.5;
+  }
+  .conn-card.add {
+    @apply min-h-[112px] cursor-pointer items-center justify-center border-dashed;
+    color: var(--fg-dim);
+  }
+  .conn-card.add:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ---------- modal ---------- */
+  .modal-backdrop {
+    @apply fixed inset-0 z-[200] flex items-center justify-center p-4;
+    background: color-mix(in srgb, #000 55%, transparent);
+    backdrop-filter: blur(3px);
+  }
+  .modal {
+    @apply w-[460px] max-w-[92vw] rounded-2xl p-6;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+  }
+  .modal h2 {
+    @apply mb-4 text-[17px] font-semibold;
+  }
+  .form-grid {
+    @apply grid gap-3;
+  }
+  .form-grid .two {
+    @apply grid grid-cols-2 gap-3;
+  }
+  .modal-actions {
+    @apply mt-5 flex justify-end gap-2;
+  }
+
+  /* ---------- workspace ---------- */
+  .workspace {
+    @apply flex h-full flex-col;
+  }
+  .topbar {
+    @apply flex items-center gap-3 px-3 py-2;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .title {
+    @apply flex items-center gap-2 font-semibold;
+  }
+  .badge {
+    @apply rounded-full px-2 py-0.5 text-[11px];
+    font-family: var(--font-mono);
+    background: var(--surface-2);
+    color: var(--fg-dim);
+  }
+  .main {
+    @apply flex min-h-0 flex-1;
+  }
+
+  /* ---------- tabs ---------- */
+  .tabs {
+    @apply ml-2 flex gap-0.5;
+  }
+  .tab {
+    @apply relative rounded-lg border-none bg-transparent px-3 py-1.5;
+    color: var(--fg-dim);
+  }
+  .tab:hover {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  .tab.active {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  .tab.active::after {
+    content: "";
+    @apply absolute bottom-0 left-3 right-3 h-0.5 rounded-full;
+    background: var(--accent);
+  }
+
+  /* ---------- key list ---------- */
+  .keylist {
+    @apply flex w-[340px] min-w-[240px] flex-col;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+  }
+  .keylist .search {
+    @apply flex flex-col gap-2 p-2.5;
+    border-bottom: 1px solid var(--border);
+  }
+  .keylist .search input {
+    @apply w-full;
+  }
+  .keylist .toolbar {
+    @apply flex items-center gap-1.5;
+  }
+  .keylist .items {
+    @apply flex-1 overflow-y-auto;
+  }
+  .key-item {
+    @apply flex cursor-pointer items-center gap-2 px-2.5 py-[7px];
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+  }
+  .key-item:hover {
+    background: var(--surface-2);
+  }
+  .key-item.active {
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  .key-item .kname {
+    @apply flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-xs;
+    font-family: var(--font-mono);
+  }
+  .type-badge {
+    @apply flex-shrink-0 rounded px-1.5 py-px text-[10px] font-bold uppercase tracking-wide;
+  }
+  .type-string { background: color-mix(in srgb, var(--blue) 20%, transparent); color: var(--blue); }
+  .type-list { background: color-mix(in srgb, var(--green) 20%, transparent); color: var(--green); }
+  .type-set { background: color-mix(in srgb, var(--yellow) 22%, transparent); color: var(--yellow); }
+  .type-hash { background: color-mix(in srgb, var(--purple) 22%, transparent); color: var(--purple); }
+  .type-zset { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent); }
+  .type-stream { background: var(--surface-2); color: var(--fg-dim); }
+  .type-none { background: var(--surface-2); color: var(--fg-faint); }
+
+  .list-footer {
+    @apply flex items-center gap-2 px-2.5 py-2 text-xs;
+    border-top: 1px solid var(--border);
+    color: var(--fg-dim);
+  }
+
+  /* ---------- detail ---------- */
+  .detail {
+    @apply flex min-w-0 flex-1 flex-col overflow-hidden;
+  }
+  .detail .header {
+    @apply flex flex-col gap-2 px-4 py-3;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail .keyname {
+    @apply break-all text-[15px];
+    font-family: var(--font-mono);
+  }
+  .detail .meta {
+    @apply flex flex-wrap items-center gap-4 text-xs;
+    color: var(--fg-dim);
+  }
+  .detail .body {
+    @apply flex-1 overflow-auto p-4;
+  }
+  .empty {
+    @apply flex flex-1 flex-col items-center justify-center gap-2;
+    color: var(--fg-faint);
+  }
+
+  .string-editor textarea {
+    @apply min-h-[300px] w-full;
+  }
+  .kv-table {
+    @apply w-full border-collapse text-xs;
+  }
+  .kv-table th {
+    @apply sticky top-0 px-2 py-1.5 text-left font-medium;
+    color: var(--fg-dim);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .kv-table td {
+    @apply px-2 py-1.5 align-top;
+    font-family: var(--font-mono);
+    word-break: break-all;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+  }
+  .kv-table td.actions {
+    @apply w-px whitespace-nowrap;
+  }
+  .kv-table tbody tr:hover {
+    background: var(--surface-2);
+  }
+  .idx-col {
+    @apply w-12;
+    color: var(--fg-faint);
+  }
+  .add-row {
+    @apply mt-3 flex flex-wrap gap-2;
+  }
+  .add-row input {
+    @apply min-w-[120px] flex-1;
+  }
+
+  /* ---------- cli (terminal-dark) ---------- */
+  .cli {
+    @apply flex h-56 flex-col;
+    border-top: 1px solid var(--border);
+    background: #0e1014;
+    color: #e6e8ec;
+  }
+  .cli .out {
+    @apply flex-1 overflow-auto whitespace-pre-wrap px-3 py-2.5 text-xs leading-relaxed;
+    font-family: var(--font-mono);
+  }
+  .cli .out .cmd {
+    color: #7fb2ff;
+  }
+  .cli .out .res {
+    color: #d5d8dd;
+  }
+  .cli .out .err {
+    color: #ff8a80;
+  }
+  .cli .prompt {
+    @apply flex items-center gap-1.5 px-3 py-2;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .cli .prompt span {
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+  .cli .prompt input {
+    @apply flex-1 border-none bg-transparent px-0 py-1;
+    color: #e6e8ec;
+    font-family: var(--font-mono);
+  }
+  .cli .prompt input:focus {
+    @apply border-none;
+    box-shadow: none;
+  }
+
+  /* ---------- generic page ---------- */
+  .page {
+    @apply flex flex-1 flex-col overflow-auto p-5;
+  }
+  .page-head {
+    @apply mb-4 flex items-center gap-2.5;
+  }
+  .page-head h2 {
+    @apply text-lg font-semibold;
+  }
+  .stat-grid {
+    @apply mb-6 grid gap-3;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+  .stat-card {
+    @apply rounded-xl p-4;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .stat-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  }
+  .stat-label {
+    @apply mb-1.5 text-xs;
+    color: var(--fg-dim);
+  }
+  .stat-value {
+    @apply text-xl font-semibold;
+    font-family: var(--font-mono);
+  }
+  .info-sections {
+    columns: 2;
+    column-gap: 1rem;
+  }
+  .info-section {
+    @apply mb-4 rounded-xl p-3.5;
+    break-inside: avoid;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .info-section h3 {
+    @apply mb-2 text-[13px] font-semibold uppercase tracking-wide;
+    color: var(--accent);
+  }
+  .info-section .kv-table td {
+    @apply px-1.5 py-1 text-[11px];
+  }
+
+  .spinner {
+    @apply text-xs;
+    color: var(--fg-dim);
+  }
+
+  /* ---------- JSON viewer ---------- */
+  .json-view {
+    @apply overflow-auto rounded-lg p-3 text-xs leading-relaxed;
+    font-family: var(--font-mono);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    white-space: pre;
+    tab-size: 2;
+  }
+  .json-key { color: var(--json-key); }
+  .json-string { color: var(--json-string); }
+  .json-number { color: var(--json-number); }
+  .json-bool { color: var(--json-bool); }
+  .json-null { color: var(--json-null); font-style: italic; }
+
+  .seg {
+    @apply inline-flex overflow-hidden rounded-lg;
+    border: 1px solid var(--border);
+  }
+  .seg button {
+    @apply cursor-pointer rounded-none border-none px-3 py-1 text-xs;
+    background: var(--surface);
+  }
+  .seg button.on {
+    background: var(--accent);
+    color: #fff;
+  }
+}
